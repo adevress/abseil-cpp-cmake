@@ -1,0 +1,12 @@
+[submodule "deps/abseil-cpp"]
+	path = deps/abseil-cpp
+	url = https://github.com/adevress/abseil-cpp
+	branch = master
+[submodule "deps/cctz"]
+	path = deps/cctz
+	url = https://github.com/google/cctz
+	branch = master
+[submodule "deps/googletest"]
+	path = deps/googletest
+	url = https://github.com/google/googletest.git
+	branch = master

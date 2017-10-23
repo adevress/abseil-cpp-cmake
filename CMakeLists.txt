@@ -13,10 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-cmake_minimum_required(VERSION 2.8.12)
+cmake_minimum_required(VERSION 3.0)
 project(absl)
-
-
 
 
 
@@ -143,7 +141,21 @@ list(APPEND ABSEIL_TARGET_NAMES
         base
         throw_delegate
         stacktrace
-        "cctz"          # for dependency only
+
+)
+
+if(NOT ABSL_NO_BUNDLE)
+
+list(APPEND ABSEIL_DEP_TARGET_NAMES
+        cctz
+)
+
+endif()
+
+
+list(APPEND ABSEIL_TARGET_ALL
+    ${ABSEIL_TARGET_NAMES}
+    cctz
 )
 
 abseil_pkgconf_generate(
@@ -151,11 +163,39 @@ abseil_pkgconf_generate(
     VERSION "master"
     DESCRIPTION "Abseil - C++ Common Libraries"
     URL "https://abseil.io/"
-    LIB_NAMES ${ABSEIL_TARGET_NAMES}
+    LIB_NAMES ${ABSEIL_TARGET_ALL}
 )
 
 
-## export two cache variables for
-## simple stupid embedded usage
-set(ABSL_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}" CACHE STRING "abseil header directory")
-set(ABSL_ALL_LIBRARIES "${ABSEIL_TARGET_NAMES}" CACHE STRING "targets of all abseil libraries")
+
+##
+## add installation for every abseil target
+#
+foreach(absl_target ${ABSEIL_TARGET_NAMES})
+
+    # extremly ugly....
+    # but it is not possible to install a cmake target outside of its own directory....
+    get_target_property(absl_lib_location ${absl_target} BINARY_DIR)
+    install(FILES "${absl_lib_location}/lib${absl_target}.a" DESTINATION ${CMAKE_INSTALL_FULL_LIBDIR})
+
+endforeach()
+
+
+# take care of the headers
+file(GLOB ALL_COMPONENTS "deps/abseil-cpp/include/*")
+
+foreach(component ${ALL_COMPONENTS})
+
+    # 
+    FILE(GLOB COMPONENT_PUBLIC_HEADERS "${component}/*.h")
+    FILE(GLOB COMPONENT_INTERNAL_HEADERS "${component}/internal/*.h")
+    
+    install(FILES  ${COMPONENT_PUBLIC_HEADERS} 
+                DESTINATION ${CMAKE_INSTALL_FULL_INCLUDEDIR}/absl/${component})
+                
+    install(FILES  ${COMPONENT_INTERNAL_HEADERS} 
+                DESTINATION ${CMAKE_INSTALL_FULL_INCLUDEDIR}/absl/${component}/internal)                
+
+endforeach()
+
+

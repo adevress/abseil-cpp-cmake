@@ -131,16 +131,16 @@ add_subdirectory(deps/abseil-cpp)
 # -lbase -lthrow_delegate  -lstacktrace  -lcctz
 #
 list(APPEND ABSEIL_TARGET_NAMES
-        synchronization
-        malloc_extension
-        strings
-        time
-        int128
-        bad_any_cast
-        utility
-        base
-        throw_delegate
-        stacktrace
+        absl_synchronization
+        absl_malloc_extension
+        absl_strings
+        absl_time
+        absl_int128
+        absl_bad_any_cast
+        absl_utility
+        absl_base
+        absl_throw_delegate
+        absl_stacktrace
 
 )
 
